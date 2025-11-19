@@ -13,3 +13,24 @@ The repository automatically monitors all GitHub Actions workflows. When a workf
 - Issues are labeled with `workflow-failure` and `automated` for easy filtering
 
 This helps ensure that workflow failures are properly tracked and don't go unnoticed.
+
+#### How It Works
+
+The workflow is triggered by the `workflow_run` event, which fires whenever any workflow in the repository completes. If the conclusion is `failure`, the tracking workflow:
+
+1. Checks if an issue already exists for this workflow and branch combination
+2. If no issue exists, creates a new one with:
+   - Workflow name and branch
+   - Commit SHA and triggering user
+   - Link to the failed workflow run
+   - Associated pull request numbers (if applicable)
+3. If an issue already exists, adds a comment with details of the new failure
+
+#### Configuration
+
+The workflow is located at `.github/workflows/track-failed-workflows.yml` and requires the following permissions:
+- `issues: write` - to create and update issues
+- `actions: read` - to read workflow run information
+- `contents: read` - to access repository content
+
+No additional configuration is needed - the workflow automatically monitors all workflows in the repository.
